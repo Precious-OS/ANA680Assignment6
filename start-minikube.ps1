@@ -1,0 +1,3 @@
+minikube start --driver=docker --force --kubernetes-version=v1.31.0 --extra-config=kubelet.cgroup-driver=systemd --extra-config=kubeadm.ignore-preflight-errors=KubeletVersion
+winpty docker exec -it minikube bash -c "apt-get update && apt-get install -y libc6-amd64-cross && mkdir -p /lib64 && ln -s /usr/x86_64-linux-gnu/lib/ld-linux-x86-64.so.2 /lib64/ld-linux-x86-64.so.2 && systemctl enable kubelet && systemctl restart kubelet"
+minikube update-context
