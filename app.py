@@ -1,24 +1,25 @@
 from flask import Flask, render_template, request
 import numpy as np
 import pickle
-#import joblib
+
 app = Flask(__name__)
-filename = 'file_iris.pkl'
-model = pickle.load(open(filename, 'rb'))    # load the model
-#model = joblib.load(filename)  # two ways to load the model, not using joblib here
-#model = joblib.load('filename.pkl')
+model = pickle.load(open('file_iris.pkl', 'rb'))
+
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', predict='')
 
-@app.route('/predict', methods=['POST'])  # The user input is processed here
+@app.route('/predict', methods=['POST'])
 def predict():
-    Sepal_Length = request.form['sepal_length']
-    Sepal_Width = request.form['sepal_width']
-    Petak_Length = request.form['petal_length']
-    Petal_Width = request.form['petal_width']
-    pred = model.predict(np.array([[Sepal_Length, Sepal_Width, Petak_Length, Petal_Width ]]))
-    #print(pred)
-    return render_template('index.html', predict=str(pred))
+    try:
+        sepal_length = float(request.form['sepal_length'])
+        sepal_width = float(request.form['sepal_width'])
+        petal_length = float(request.form['petal_length'])  # Fixed typo
+        petal_width = float(request.form['petal_width'])
+        pred = model.predict(np.array([[sepal_length, sepal_width, petal_length, petal_width]]))
+        return render_template('index.html', predict=pred[0])
+    except ValueError:
+        return render_template('index.html', predict="Invalid input: Please enter numeric values")
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False)
